@@ -1,2 +1,5 @@
 .idea/
 LoadHistoricData/__pycache__/
+load_history/__pycache__/
+load_history/data.json
+load_history/old_test.py
