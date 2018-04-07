@@ -6,9 +6,9 @@ from load_history.util import get_country
 
 
 class Loader(object):
-    def __init__(self, file_path, limit=50, mode=False):
+    def __init__(self, file_path, limit=300, mode=False):
         self.file_path = file_path
-        self.table = boto3.resource('dynamodb').Table('eas-earthquake')
+        self.table = boto3.resource('dynamodb').Table('eas-earthquake-prod')
         self.current_data = []
         self.limit = limit
         self.batch_counter = 0
@@ -17,6 +17,7 @@ class Loader(object):
         self.request_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query'
         self.current_range = None
         self.test_mode = mode
+        self.fetch_counter = 0
 
     def batch_write(self):
         print('[Batch writer started] Counter: ' + str(self.upload_counter))
@@ -37,6 +38,7 @@ class Loader(object):
         self.current_data.clear()
         self.batch_counter = 0
         self.upload_counter += batch_size
+        print('[Batch writer Ended]')
 
     def read_ranges_from_file(self):
         with open(self.file_path, 'r') as lines:
@@ -58,11 +60,12 @@ class Loader(object):
 
             r = requests.get(self.request_url, params=pay_load)
             response = r.json()
-            print('[Info] Fetch from ' + str(e))
+            self.fetch_counter += len(response['features'])
+            print('[Info] Fetch from ' + str(e) + ' with ' + str(len(response['features'])))
 
             for data in response['features']:
 
-                if self.test_mode and self.upload_counter >= 50:
+                if self.test_mode and self.upload_counter >= self.limit:
                     print('exiting due to test mode')
                     sys.exit()
 
@@ -94,10 +97,15 @@ class Loader(object):
                     if self.batch_counter >= self.limit:
                         self.batch_write()
 
+            # write the remaining
+            if self.batch_counter > 0:
+                self.batch_write()
+
     def run(self):
         self.read_ranges_from_file()
         self.request_data()
         print('[Load finished] Upload counter: ' + str(self.upload_counter))
+        print('[Compare] ' + str(self.upload_counter == self.fetch_counter))
 
     def write_remainig_into_file(self):
         if self.current_range is None:
