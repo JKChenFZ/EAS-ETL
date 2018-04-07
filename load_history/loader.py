@@ -115,4 +115,6 @@ class Loader(object):
         print('[Write] Finished cleaning up')
 
 if __name__ == '__main__':
-    load = Loader(sys.argv[1], mode=True)
+    mode = True if sys.argv[2] == 't' else False
+    load = Loader(sys.argv[1], mode=mode)
+    load.run()
