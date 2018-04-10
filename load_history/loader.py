@@ -2,6 +2,7 @@ import boto3
 import requests
 import sys
 from decimal import Decimal
+from numbers import Number
 from load_history.util import get_country
 
 
@@ -77,7 +78,7 @@ class Loader(object):
                         'geotype': str(data['geometry']['type']),
                         'longitude': Decimal(str(data['geometry']['coordinates'][0])),
                         'latitude': Decimal(str(data['geometry']['coordinates'][1])),
-                        'depth': Decimal(str(data['geometry']['coordinates'][2])),
+                        'depth': Decimal(str(data['geometry']['coordinates'][2])) if isinstance(data['geometry']['coordinates'][2], Number) else Decimal('0'),
                         'mag': 0 if data['properties']['mag'] is None else Decimal(str(data['properties']['mag'])),
                         'place': 'N/A' if data['properties']['place'] is None else str(data['properties']['place']),
                         'time': -1 if data['properties']['time'] is None else Decimal(str(data['properties']['time'])),
