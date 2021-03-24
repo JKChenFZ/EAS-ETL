@@ -18,7 +18,7 @@ PyYAML==3.12
 ratelim==0.1.6
 requests==2.18.4
 reverse-geocoder==1.5.1
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.1.13
 scipy==1.0.1
 six==1.11.0
