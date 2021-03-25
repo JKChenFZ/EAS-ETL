@@ -14,7 +14,7 @@ numpy==1.14.2
 psycopg2==2.7.4
 pyasn1==0.4.2
 python-dateutil==2.6.1
-PyYAML==3.12
+PyYAML==5.4
 ratelim==0.1.6
 requests==2.18.4
 reverse-geocoder==1.5.1
